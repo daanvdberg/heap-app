@@ -1,5 +1,5 @@
 import React from 'react';
-import Release from '../../components/Release';
+import Release from '../../components/ReleaseCard';
 import { useQueryAllReleases } from '../../hooks/discogs/useAllReleases';
 
 const Collection = () => {
@@ -17,12 +17,8 @@ const Collection = () => {
 	console.log(data);
 
 	return (
-		<div>
-			Collection
-
-			<div className="grid grid-cols-4 gap-4">
-				{data.releases.map((release) => <Release release={release} key={release.id} />)}
-			</div>
+		<div className="grid grid-cols-4 gap-4">
+			{data.releases.map((release) => <Release release={release} key={release.id} />)}
 		</div>
 	);
 };

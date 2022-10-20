@@ -21,10 +21,8 @@ a {
 
 
 @layer utilities {
-	@variants responsive {
-		.h-unset {
-			height: unset;
-		}
+	.h-unset {
+		height: unset;
 	}
 }
 
