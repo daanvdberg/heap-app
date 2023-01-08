@@ -17,7 +17,7 @@ export interface FolderRelease {
 		title: string;
 		year: number;
 	};
-	date_added: Date | null;
+	date_added: string | null;
 	folder_id: number;
 	id: number;
 	instance_id: number;

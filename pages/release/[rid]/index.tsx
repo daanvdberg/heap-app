@@ -3,15 +3,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { useRouter } from 'next/router';
 import Carousel from '../../../components/Carousel';
-import { useRelease } from '../../../hooks/discogs/useRelease';
+import { trpc } from '../../../utils/trpc';
+import ReleaseLink from './components/MasterLink';
 import MasterLink from './components/MasterLink';
 
 function Release() {
 
 	const router = useRouter();
-	const { rid = '' } = router.query;
+	const { rid } = router.query;
 
-	const { status, data } = useRelease(rid as string);
+  const { status, data } = trpc.releases.byId.useQuery({ id: rid as string }, { enabled: !!rid });
 
 	if (status === 'loading') {
 		return <h1>Loading...</h1>;
@@ -35,10 +36,11 @@ function Release() {
 				<div
 					className="relative flex-grow grid grid-cols-1 auto-cols-auto gap-y-4 h-full w-full mx-auto min-h-128">
 					<h2 className="text-5xl font-semibold pr-36">{data.title}</h2>
-					<h3 className="text-xl text-gray-500">{data.artists.map(i => i.name).join(', ')}</h3>
+					<h3 className="text-xl text-gray-500 pr-36">{data.artists.map(i => i.name).join(', ')}</h3>
 					{data.notes ? <p>{data.notes}</p> : ''}
-					<div className="absolute top-3 right-0 space-y-0">
-						<MasterLink masterId={data.master_id} />
+          <div className="absolute top-3 right-0 space-y-0 grid gap-1">
+            <ReleaseLink releaseId={data.uri} />
+						<ReleaseLink releaseId={data.master_id} isMaster={true} />
 					</div>
 				</div>
 
@@ -58,7 +60,7 @@ function Release() {
 					<FontAwesomeIcon icon={solid('calendar')} className="h-5 w-5" />
 					<div className="ml-4">
 						<span className="block font-semibold">Released</span>
-						<span className="block">{data.released}</span>
+						<span className="block">{data.released || 'N/A'}</span>
 					</div>
 				</div>
 				<div className="flex items-center py-2 px-4 bg-white rounded-md">
@@ -96,14 +98,17 @@ function Release() {
 			<div className="flex">
 				<div className="basis-7/12 py-20 px-24 space-y-4 bg-black text-white rounded-xl">
 					<h3 className="font-semibold text-3xl mb-10">Tracklist</h3>
-					{data.tracklist.map(t => (
-						<div key={t.position} className="flex items-center">
-							<span
-								className="inline-flex items-center px-3 mr-4 bg-white text-sm text-black border border-white rounded-md">{t.position}</span>
-							<span className="flex-grow">{t.title}</span>
-							<span>{t.duration}</span>
-						</div>
-					))}
+					{data.tracklist.map((track, index, elements) => {
+            const next = elements[index+1];
+            return (
+              <div key={track.position} className={`flex items-center${(next && track.position[0] !== next.position[0]) ? ' pb-4 border-b border-white/50' : ''}`}>
+                <span
+                  className="inline-flex items-center px-3 mr-4 bg-white text-sm text-black border border-white rounded-md">{track.position}</span>
+                <span className="flex-grow">{track.title}</span>
+                <span>{track.duration}</span>
+              </div>
+            );
+          })}
 				</div>
 				<div className="basis-5/12 pl-10">
 					<iframe className="border-1"

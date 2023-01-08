@@ -9,6 +9,7 @@ import {
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import Layout from '../components/layout';
+import { trpc } from '../utils/trpc';
 
 function MyApp({ Component, pageProps }: AppProps<{ dehydratedState: DehydratedState }>) {
 	const [queryClient] = useState(() => new QueryClient());
@@ -25,4 +26,4 @@ function MyApp({ Component, pageProps }: AppProps<{ dehydratedState: DehydratedS
 	);
 }
 
-export default MyApp;
+export default trpc.withTRPC(MyApp);

@@ -1,4 +1,3 @@
-
 const {
 	DISCOGS_API_BASE_URL,
 	DISCOGS_API_USER_TOKEN
@@ -32,6 +31,7 @@ const discogsClient = (
 
 	return fetch(`${DISCOGS_API_BASE_URL}/${endpoint}`, config)
 		.then(async response => {
+      console.log(response);
 			if (response.ok) {
 				return await response.json()
 			} else {

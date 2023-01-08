@@ -2,28 +2,29 @@ import React from 'react';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-interface MasterLinkProps {
-	masterId?: number
+interface ReleaseLinkProps {
+	releaseId?: number | string,
+  isMaster?: boolean
 }
 
-function MasterLink({ masterId }: MasterLinkProps) {
+function ReleaseLink({ releaseId, isMaster = false }: ReleaseLinkProps) {
 
-	if (!masterId) {
+	if (!releaseId) {
 		return <></>;
 	}
 
 	return (
 		<a
-			href={`https://www.discogs.com/master/${masterId}`}
+			href={typeof releaseId === 'number' ? `https://www.discogs.com/master/${releaseId}` : releaseId}
 			target='_blank' rel='noreferrer'
-			title='View Master Release on Discogs'
-			className='inline-flex items-center self-start px-2 py-1 border border-current rounded text-sm'
+			title={`View ${isMaster ? 'Master ' : ''}on Discogs`}
+			className='inline-flex items-center self-start px-2 py-1 border border-current rounded text-sm justify-center'
 		>
-			View Master&nbsp;
+      {isMaster ? 'View Master' : 'View Release'}&nbsp;
 			<FontAwesomeIcon icon={solid('arrow-up-right-from-square')}
 			                 className="h-4 w-4 mr-1" />
 		</a>
 	);
 }
 
-export default MasterLink;
+export default ReleaseLink;
