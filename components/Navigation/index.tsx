@@ -9,16 +9,14 @@ const Navigation = () => {
         <div className="container max-w-7xl m-auto px-6">
           <div className="flex flex-wrap items-center justify-between gap-6 md:py-3 md:gap-0">
             <div className="w-full px-6 flex justify-between lg:w-max md:px-0">
-              <Link href="/" aria-label="logo">
-                <a className="flex space-x-2 items-center">
-                  <div aria-hidden="true" className="flex space-x-1">
-                    <div
-                      className="flex items-center justify-center h-7 w-7 rounded-full bg-gray-900">
-                      <div className="z1 h-2 w-2 rounded-full bg-white"></div>
-                    </div>
+              <Link href="/" aria-label="logo" className="flex space-x-2 items-center">
+                <div aria-hidden="true" className="flex space-x-1">
+                  <div
+                    className="flex items-center justify-center h-7 w-7 rounded-full bg-gray-900">
+                    <div className="z1 h-2 w-2 rounded-full bg-white"></div>
                   </div>
-                  <span className="text-base font-bold text-gray-400">HEAP</span>
-                </a>
+                </div>
+                <span className="text-base font-bold text-gray-400">HEAP</span>
               </Link>
               <label htmlFor="hbr"
                      className="peer-checked:hamburger block relative z-20 p-6 -mr-6 cursor-pointer lg:hidden">
@@ -35,14 +33,12 @@ const Navigation = () => {
                   <li>
                     <Link href="/collection"
                           className="block md:px-4 transition hover:text-sky-700">
-                      <a><span>Collection</span></a>
+                      <span>Collection</span>
                     </Link>
                   </li>
                   <li>
-                    <Link href="/wishlist">
-                      <a className="block md:px-4 transition hover:text-sky-700">
-                        <span>Wishlist</span>
-                      </a>
+                    <Link href="/wishlist" className="block md:px-4 transition hover:text-sky-700">
+                      <span>Wishlist</span>
                     </Link>
                   </li>
                 </ul>
