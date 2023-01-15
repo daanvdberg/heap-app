@@ -1,5 +1,5 @@
 import React from 'react';
-import NextImage, { ImageProps } from 'next/future/image';
+import NextImage, { ImageProps } from 'next/image';
 import styles from './Image.module.css';
 
 function Image({ className, ...props }: ImageProps) {
