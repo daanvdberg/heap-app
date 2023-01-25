@@ -1,28 +1,59 @@
-import { useCallback } from 'preact/compat';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import ReleaseCard from '../../components/ReleaseCard';
 import ReleaseListItem from '../../components/ReleaseListItem';
+import Pagination from '../../components/Pagination';
+import useLocalStorage from '../../hooks/useLocalStorage';
 import { ReleaseViewType } from '../../types/custom';
+import { Folder } from '../../types/discogs';
 import { trpc } from '../../utils/trpc';
 import CollectionToolbar from './components/CollectionToolbar';
+import type { inferRouterInputs } from '@trpc/server';
+import type { AppRouter } from '../../server/routers/_app';
 
-const options = [
-  { value: 'all', label: 'All Releases' },
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' }
-];
+type RouterInput = inferRouterInputs<AppRouter>;
+type PerPageType = RouterInput['userCollection']['releases']['perPage'];
 
 const Collection = () => {
 
-  const { status, data } = trpc.releases.all.useQuery({ page: 2 });
+  const { replace, query } = useRouter();
 
-  const [viewType, setViewType] = useState<ReleaseViewType>('grid');
+  const [folder, setFolder] = useState<Folder>();
+  const [viewType, setViewType] = useLocalStorage<ReleaseViewType>('view-type', 'grid');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage, setPostsPerPage] = useLocalStorage<PerPageType>('items-per-page', 16);
+
+  const { status: folderStatus, data: folderData = { folders: [] } } = trpc.userCollection.folders.useQuery();
+  const { status, data } = trpc.userCollection.releases.useQuery({ folder, page: currentPage, perPage: postsPerPage });
+
+  const handleSetPostsPerPage = (perPage: PerPageType) => {
+    if (perPage) setPostsPerPage(perPage);
+  };
+
+  const handleSetFolder = (id: number) => {
+    if (id >= 0 && folderData.folders.length) {
+      const newFilter = folderData.folders.find(f => f.id === id);
+      if (newFilter) {
+        setFolder(newFilter);
+        setCurrentPage(1);
+        updateQueryParams([{ key: 'page', value: 1 }, { key: 'folder', value: newFilter.id.toString() }]);
+      }
+    }
+  };
 
   const handleSetViewType = (type: ReleaseViewType) => {
-    console.log(type);
     setViewType(type);
   };
+
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    updateQueryParams([{ key: 'page', value: pageNumber }]);
+  };
+
+  const updateQueryParams = (params: { key: number | string, value: number | string }[]) => {
+    const newParams = params.reduce((prev, curr) => ({ ...prev, [curr.key]: curr.value }), {});
+    replace({ query: { ...query, ...newParams } }, undefined, { shallow: true });
+  }
 
   if (status === 'loading') {
     return <h1>Loading...</h1>;
@@ -36,8 +67,10 @@ const Collection = () => {
     <div>
 
       <CollectionToolbar
-        filterOptions={options}
-        count={data.releases.length}
+        filterOptions={folderData.folders}
+        currentFilter={folder}
+        setFilter={handleSetFolder}
+        count={data.pagination.items}
         type={viewType}
         setType={handleSetViewType}
       />
@@ -48,6 +81,15 @@ const Collection = () => {
           : <ReleaseListItem release={release} key={release.id} />
         ))}
       </div>
+
+      <Pagination
+        totalPages={data.pagination.pages}
+        postsPerPage={postsPerPage}
+        setPerPage={handleSetPostsPerPage}
+        paginate={paginate}
+        currentPage={currentPage}
+        count={data.pagination.items}
+      />
 
     </div>
   );

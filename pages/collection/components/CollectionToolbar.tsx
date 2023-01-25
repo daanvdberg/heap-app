@@ -1,22 +1,20 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import Select from 'react-select';
 import { ReleaseViewType } from '../../../types/custom';
-
-interface FilterOption {
-  value: string,
-  label: string
-}
+import { Folder } from '../../../types/discogs';
 
 interface CollectionToolbarProps {
-  filterOptions?: FilterOption[];
-  currentFilter?: FilterOption;
-  setFilter?: (filter: FilterOption) => void;
+  filterOptions?: Folder[];
+  currentFilter?: Folder;
+  setFilter?: (id: number) => void;
   count: number;
   type?: ReleaseViewType;
   setType?: (type: ReleaseViewType) => void;
 }
+
+const parseFilter = (folder: Folder) => ({ value: folder.id, label: `${folder.name} (${folder.count})` });
 
 const CollectionToolbar = (
   {
@@ -28,22 +26,43 @@ const CollectionToolbar = (
     setType
   }: CollectionToolbarProps
 ) => {
-  if (!setType && !filterOptions) return null;
+
+  const [options, setOptions] = useState<{ value: number, label: string }[]>();
+
+  useMemo(() => {
+    if (filterOptions && filterOptions.length) {
+      setOptions(filterOptions.filter(f => f.count > 0).map(f => parseFilter(f)));
+    }
+  }, [filterOptions]);
+
   return (
     <div className="flex justify-between items-center bg-white rounded-md shadow-lg mb-6 py-3 px-4">
       <div className="flex items-center">
-        {(filterOptions && filterOptions.length) ?
-          <Select
-              className="mr-4 w-44" defaultValue={filterOptions[0]} options={filterOptions} placeholder="Filter Category"
+        {(options && options.length) ?
+          <>
+            <label id="filter-label" htmlFor="filter" className="sr-only">
+              Items per Page
+            </label>
+            <Select
+              aria-labelledby="filter-label"
+              inputId="filter"
+              name="select-filter"
+              className="mr-4 w-44"
+              defaultValue={options[0]}
+              options={options}
+              value={currentFilter && parseFilter(currentFilter)}
+              onChange={(option) => option && setFilter && setFilter(option.value)}
+              placeholder="Filter by Folder"
               theme={(theme) => ({
                 ...theme,
                 colors: {
                   ...theme.colors,
-                  primary25: '#0891b2',
+                  primary25: '#d3e5ea',
                   primary: '#0891b2'
                 }
               })}
-          /> : ''}
+            />
+          </> : ''}
         <div className="text-sm">
           {count > 0 ? `${count} Releases` : 'No Releases'}
         </div>

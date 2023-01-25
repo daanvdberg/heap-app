@@ -1,8 +1,8 @@
 import { router } from '../trpc';
-import { releasesRouter } from './releases';
+import { userCollectionRouter } from './user-collection';
 
 export const appRouter = router({
-  releases: releasesRouter
+  userCollection: userCollectionRouter
 });
 
 export type AppRouter = typeof appRouter;

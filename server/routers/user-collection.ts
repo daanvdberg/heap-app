@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import discogsClient from '../../services/discogs';
-import { GetFolderReleasesResponse, GetReleaseResponse } from '../../types/discogs';
+import { Folder, GetFolderReleasesResponse, GetFolderResponse, GetReleaseResponse } from '../../types/discogs';
 import { buildUrl } from '../../utils';
 import { procedure, router } from '../trpc';
 
@@ -21,16 +21,27 @@ const releaseCurrencySchema = z.union([
   z.literal("ZAR")
 ]);
 
-export const releasesRouter = router({
-  all: procedure
+export const userCollectionRouter = router({
+  folders: procedure
+    .query(async () => {
+      const url = buildUrl(`users/${DISCOGS_USERNAME}/collection/folders`);
+      const result: GetFolderResponse = await discogsClient(url);
+      return result;
+    }),
+  releases: procedure
     .input(z.object({
-      folder: z.optional(z.number()).default(0),
+      folder: z.optional(z.object({
+        count: z.number(),
+        id: z.number(),
+        name: z.string(),
+        resource_url: z.string()
+      })),
       page: z.optional(z.number().min(1)).default(1),
-      perPage: z.optional(z.union([z.literal(16), z.literal(32)])).default(16)
+      perPage: z.union([z.literal(16), z.literal(32)]).default(16)
     }))
     .query(async ({ input }) => {
       const url = buildUrl(
-        `users/${DISCOGS_USERNAME}/collection/folders/${input.folder}/releases`,
+        `users/${DISCOGS_USERNAME}/collection/folders/${input.folder ? input.folder.id : 0}/releases`,
         [{ key: 'page', value: input.page.toString() }, { key: 'per_page', value: input.perPage.toString() }]
       );
       const result: GetFolderReleasesResponse = await discogsClient(url);

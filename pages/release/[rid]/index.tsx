@@ -5,14 +5,13 @@ import { useRouter } from 'next/router';
 import Carousel from '../../../components/Carousel';
 import { trpc } from '../../../utils/trpc';
 import ReleaseLink from './components/MasterLink';
-import MasterLink from './components/MasterLink';
 
 function Release() {
 
 	const router = useRouter();
 	const { rid } = router.query;
 
-  const { status, data } = trpc.releases.byId.useQuery({ id: rid as string }, { enabled: !!rid });
+  const { status, data } = trpc.userCollection.byId.useQuery({ id: rid as string }, { enabled: !!rid });
 
 	if (status === 'loading') {
 		return <h1>Loading...</h1>;
@@ -21,8 +20,6 @@ function Release() {
 	if (status === 'error') {
 		return <div>Error...</div>;
 	}
-
-	console.log(data);
 
 	return (
 		<div className="min-h-screen py-12 sm:pt-20 max-w-6xl mx-auto">
@@ -60,7 +57,7 @@ function Release() {
 					<FontAwesomeIcon icon={solid('calendar')} className="h-5 w-5" />
 					<div className="ml-4">
 						<span className="block font-semibold">Released</span>
-						<span className="block">{data.released || 'N/A'}</span>
+						<span className="block">{data.released_formatted || data.released || 'N/A'}</span>
 					</div>
 				</div>
 				<div className="flex items-center py-2 px-4 bg-white rounded-md">
