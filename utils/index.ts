@@ -1,13 +1,12 @@
-interface QueryParameters {
-  key: string,
-  value: string
-}
+import queryString from 'query-string';
 
-export const buildUrl = (url: string, params?: QueryParameters[]) => {
-  if (params && params.length) {
-    const query = new URLSearchParams();
-    params.forEach(param => query.append(param.key, param.value));
-    return url + '?' + query;
+type Parameters = {
+  [key: string]: any;
+};
+
+export const buildUrl = (url: string, params?: Parameters) => {
+  if (params) {
+    return url + '?' + queryString.stringify(params);
   }
   return url;
 }

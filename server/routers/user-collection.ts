@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import discogsClient from '../../services/discogs';
-import { Folder, GetFolderReleasesResponse, GetFolderResponse, GetReleaseResponse } from '../../types/discogs';
+import { GetFolderReleasesResponse, GetFolderResponse, GetReleaseResponse } from '../../types/discogs';
 import { buildUrl } from '../../utils';
 import { procedure, router } from '../trpc';
 
@@ -42,7 +42,7 @@ export const userCollectionRouter = router({
     .query(async ({ input }) => {
       const url = buildUrl(
         `users/${DISCOGS_USERNAME}/collection/folders/${input.folder ? input.folder.id : 0}/releases`,
-        [{ key: 'page', value: input.page.toString() }, { key: 'per_page', value: input.perPage.toString() }]
+        { page: input.page.toString(), per_page: input.perPage.toString() }
       );
       const result: GetFolderReleasesResponse = await discogsClient(url);
       return result;
@@ -55,7 +55,7 @@ export const userCollectionRouter = router({
     .query(async ({ input }) => {
       const url = buildUrl(
         `releases/${input.id}`,
-        [{ key: 'currency', value: input.currency.toString() }]
+        { currency: input.currency.toString() }
       );
       const result: GetReleaseResponse = await discogsClient(url);
       return result;

@@ -13,6 +13,12 @@ function Release() {
 
   const { status, data } = trpc.userCollection.byId.useQuery({ id: rid as string }, { enabled: !!rid });
 
+  let query = '';
+  if (data) {
+    query = 'album:' + data.title + (data.artists[0] ? ' artist:' + data.artists[0].name : '');
+  }
+  const { data: spotifyData } = trpc.spotify.search.useQuery({ query }, { enabled: !!query });
+
 	if (status === 'loading') {
 		return <h1>Loading...</h1>;
 	}
@@ -93,7 +99,7 @@ function Release() {
 			</div>
 
 			<div className="flex">
-				<div className="basis-7/12 py-20 px-24 space-y-4 bg-black text-white rounded-xl">
+				<div className="basis-7/12 py-20 px-24 space-y-4 bg-black text-white rounded-xl min-h-[500px]">
 					<h3 className="font-semibold text-3xl mb-10">Tracklist</h3>
 					{data.tracklist.map((track, index, elements) => {
             const next = elements[index+1];
@@ -107,12 +113,16 @@ function Release() {
             );
           })}
 				</div>
-				<div className="basis-5/12 pl-10">
-					<iframe className="border-1"
-					        src="https://open.spotify.com/embed/track/1lH9OA5toIFUGsvU20rV4m?utm_source=generator"
-					        width="100%" height="352" frameBorder="0"
-					        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-					        loading="lazy"></iframe>
+				<div className="basis-5/12 pl-10 min-h-[500px]">
+          {spotifyData?.albums?.items?.length ?
+              <iframe
+                className="border-1 h-full"
+                src={`https://open.spotify.com/embed/album/${spotifyData.albums.items[0].id}`}
+                width="100%" frameBorder="0"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+              ></iframe>
+            : ''}
 				</div>
 			</div>
 

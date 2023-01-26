@@ -1,3 +1,5 @@
+import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import React from 'react';
 
@@ -10,12 +12,7 @@ const Navigation = () => {
           <div className="flex flex-wrap items-center justify-between gap-6 md:py-3 md:gap-0">
             <div className="w-full px-6 flex justify-between lg:w-max md:px-0">
               <Link href="/" aria-label="logo" className="flex space-x-2 items-center">
-                <div aria-hidden="true" className="flex space-x-1">
-                  <div
-                    className="flex items-center justify-center h-7 w-7 rounded-full bg-gray-900">
-                    <div className="z1 h-2 w-2 rounded-full bg-white"></div>
-                  </div>
-                </div>
+                <FontAwesomeIcon icon={solid('otter')} className="h-7 w-7" />
                 <span className="text-base font-bold text-gray-400">HEAP</span>
               </Link>
               <label htmlFor="hbr"
