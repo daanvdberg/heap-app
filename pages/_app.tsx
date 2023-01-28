@@ -12,14 +12,15 @@ import Layout from '../components/layout';
 import { trpc } from '../utils/trpc';
 
 function MyApp({ Component, pageProps }: AppProps<{ dehydratedState: DehydratedState }>) {
+
 	const [queryClient] = useState(() => new QueryClient());
 
-	return (
+  return (
 		<QueryClientProvider client={queryClient}>
 			<Hydrate state={pageProps.dehydratedState}>
-				<Layout>
-					<Component {...pageProps} />
-				</Layout>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
 			</Hydrate>
 			<ReactQueryDevtools />
 		</QueryClientProvider>

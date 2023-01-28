@@ -1,15 +1,16 @@
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
-import ReleaseCard from '../../components/ReleaseCard';
-import ReleaseListItem from '../../components/ReleaseListItem';
-import Pagination from '../../components/Pagination';
-import useLocalStorage from '../../hooks/useLocalStorage';
-import { ReleaseViewType } from '../../types/custom';
-import { Folder } from '../../types/discogs';
-import { trpc } from '../../utils/trpc';
+import React, { useEffect, useState } from 'react';
+import ReleaseCard from '../../../components/ReleaseCard';
+import ReleaseListItem from '../../../components/ReleaseListItem';
+import Pagination from '../../../components/Pagination';
+import useLocalStorage from '../../../hooks/useLocalStorage';
+import { ReleaseViewType } from '../../../types/custom';
+import { Folder } from '../../../types/discogs';
+import { isMobile } from '../../../utils';
+import { trpc } from '../../../utils/trpc';
 import CollectionToolbar from './components/CollectionToolbar';
 import type { inferRouterInputs } from '@trpc/server';
-import type { AppRouter } from '../../server/routers/_app';
+import type { AppRouter } from '../../../server/routers/_app';
 
 type RouterInput = inferRouterInputs<AppRouter>;
 type PerPageType = RouterInput['userCollection']['releases']['perPage'];
@@ -25,6 +26,11 @@ const Collection = () => {
 
   const { status: folderStatus, data: folderData = { folders: [] } } = trpc.userCollection.folders.useQuery();
   const { status, data } = trpc.userCollection.releases.useQuery({ folder, page: currentPage, perPage: postsPerPage });
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (isMobile()) setViewType('list');
+  }, []);
 
   const handleSetPostsPerPage = (perPage: PerPageType) => {
     if (perPage) setPostsPerPage(perPage);
@@ -75,7 +81,7 @@ const Collection = () => {
         setType={handleSetViewType}
       />
 
-      <div className={`grid gap-6${viewType === 'grid' ? ' grid-cols-4' : ''}`}>
+      <div className={`grid gap-4 sm:grid-gap-6${viewType === 'grid' ? ' grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4' : ''}`}>
         {data.releases.map((release) => (viewType === 'grid'
           ? <ReleaseCard release={release} key={release.id} />
           : <ReleaseListItem release={release} key={release.id} />

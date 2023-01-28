@@ -2,8 +2,10 @@ import React, { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import Select from 'react-select';
-import { ReleaseViewType } from '../../../types/custom';
-import { Folder } from '../../../types/discogs';
+import colors from 'tailwindcss/colors';
+import useDarkMode from '../../../../hooks/useDarkMode';
+import { ReleaseViewType } from '../../../../types/custom';
+import { Folder } from '../../../../types/discogs';
 
 interface CollectionToolbarProps {
   filterOptions?: Folder[];
@@ -27,6 +29,7 @@ const CollectionToolbar = (
   }: CollectionToolbarProps
 ) => {
 
+  const { isDarkMode } = useDarkMode();
   const [options, setOptions] = useState<{ value: number, label: string }[]>();
 
   useMemo(() => {
@@ -36,7 +39,7 @@ const CollectionToolbar = (
   }, [filterOptions]);
 
   return (
-    <div className="flex justify-between items-center bg-white rounded-md shadow-lg mb-6 py-3 px-4">
+    <div className="flex justify-between items-center bg-white dark:bg-slate-800 sm:rounded-md -ml-4 sm:ml-0 -mr-4 sm:mr-0 mb-6 py-3 px-4">
       <div className="flex items-center">
         {(options && options.length) ?
           <>
@@ -61,9 +64,25 @@ const CollectionToolbar = (
                   primary: '#0891b2'
                 }
               })}
+              styles={{
+                control: (styles) => ({
+                  ...styles,
+                  backgroundColor: isDarkMode ? colors.slate['800'] : 'white',
+                  borderColor: isDarkMode ? colors.slate['300'] : 'white'
+                }),
+                indicatorSeparator: (styles) => ({
+                  ...styles,
+                  backgroundColor: isDarkMode ? colors.slate['300'] : 'white'
+                }),
+                dropdownIndicator: (styles) => ({
+                  ...styles,
+                  color: isDarkMode ? colors.slate['300'] : 'white',
+                }),
+                singleValue: (styles) => ({ ...styles, color: isDarkMode ? colors.slate['300'] : colors.slate['800'] })
+              }}
             />
           </> : ''}
-        <div className="text-sm">
+        <div className="text-sm hidden sm:block dark:text-slate-200">
           {count > 0 ? `${count} Releases` : 'No Releases'}
         </div>
       </div>
@@ -71,13 +90,13 @@ const CollectionToolbar = (
         <div className="flex relative items-center">
           <button
             onClick={() => setType && setType('grid')}
-            className={`px-4 py-2.5 inline-flex items-center justify-center border rounded-l-md border-gray-200 text-center focus:bg-primary bg-white [&.active]:bg-gray-100${type === 'grid' ? ' active' : ''}`}
+                className={`px-4 py-2.5 inline-flex items-center justify-center border rounded-l-md border-slate-200 dark:border-slate-300 text-center focus:bg-primary bg-white dark:bg-slate-800 [&.active]:bg-slate-100 [&.active]:dark:bg-slate-300 dark:text-slate-400 [&.active]:dark:text-slate-800${type === 'grid' ? ' active' : ''}`}
           >
             <FontAwesomeIcon icon={solid('border-all')} className="h-4 w-4 mr-1" />
           </button>
           <button
             onClick={() => setType && setType('list')}
-            className={`px-4 py-2.5 inline-flex items-center justify-center border border-l-0 rounded-r-md border-gray-200 text-center focus:bg-primary bg-white [&.active]:bg-gray-100${type === 'list' ? ' active' : ''}`}
+            className={`px-4 py-2.5 inline-flex items-center justify-center border border-l-0 rounded-r-md border-slate-200 dark:border-slate-300 text-center focus:bg-primary bg-white dark:bg-slate-800 [&.active]:bg-slate-100 [&.active]:dark:bg-slate-300 dark:text-slate-400 [&.active]:dark:text-slate-800${type === 'list' ? ' active' : ''}`}
           >
             <FontAwesomeIcon icon={solid('list')} className="h-4 w-4 mr-1" />
           </button>
