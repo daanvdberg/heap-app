@@ -2,8 +2,8 @@ import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { useRouter } from 'next/router';
-import Carousel from '../../../components/Carousel';
-import { trpc } from '../../../utils/trpc';
+import Carousel from '../../../../components/Carousel';
+import { trpc } from '../../../../utils/trpc';
 import ReleaseLink from './components/MasterLink';
 
 function Release() {
