@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import Select from 'react-select';
 import colors from 'tailwindcss/colors';
-import useDarkMode from '../../../../hooks/useDarkMode';
 import { ReleaseViewType } from '../../../../types/custom';
 import { Folder } from '../../../../types/discogs';
 
@@ -16,32 +15,34 @@ interface CollectionToolbarProps {
   setType?: (type: ReleaseViewType) => void;
 }
 
-const parseFilter = (folder: Folder) => ({ value: folder.id, label: `${folder.name} (${folder.count})` });
+const parseFilter = (folder: Folder) => ({
+  value: folder.id,
+  label: `${folder.name} (${folder.count})`,
+});
 
-const CollectionToolbar = (
-  {
-    filterOptions,
-    currentFilter,
-    setFilter,
-    count,
-    type = 'grid',
-    setType
-  }: CollectionToolbarProps
-) => {
-
-  const { isDarkMode } = useDarkMode();
-  const [options, setOptions] = useState<{ value: number, label: string }[]>();
+const CollectionToolbar = ({
+  filterOptions,
+  currentFilter,
+  setFilter,
+  count,
+  type = 'grid',
+  setType,
+}: CollectionToolbarProps) => {
+  const isDarkMode = false;
+  const [options, setOptions] = useState<{ value: number; label: string }[]>();
 
   useMemo(() => {
     if (filterOptions && filterOptions.length) {
-      setOptions(filterOptions.filter(f => f.count > 0).map(f => parseFilter(f)));
+      setOptions(
+        filterOptions.filter((f) => f.count > 0).map((f) => parseFilter(f))
+      );
     }
   }, [filterOptions]);
 
   return (
-    <div className="flex justify-between items-center bg-white dark:bg-slate-800 sm:rounded-md -ml-4 sm:ml-0 -mr-4 sm:mr-0 mb-6 py-3 px-4">
+    <div className="-ml-4 -mr-4 mb-6 flex items-center justify-between bg-white py-3 px-4 dark:bg-slate-800 sm:ml-0 sm:mr-0 sm:rounded-md">
       <div className="flex items-center">
-        {(options && options.length) ?
+        {options && options.length ? (
           <>
             <label id="filter-label" htmlFor="filter" className="sr-only">
               Items per Page
@@ -54,53 +55,71 @@ const CollectionToolbar = (
               defaultValue={options[0]}
               options={options}
               value={currentFilter && parseFilter(currentFilter)}
-              onChange={(option) => option && setFilter && setFilter(option.value)}
+              onChange={(option) =>
+                option && setFilter && setFilter(option.value)
+              }
               placeholder="Filter by Folder"
               theme={(theme) => ({
                 ...theme,
                 colors: {
                   ...theme.colors,
                   primary25: '#d3e5ea',
-                  primary: '#0891b2'
-                }
+                  primary: '#0891b2',
+                },
               })}
               styles={{
                 control: (styles) => ({
                   ...styles,
                   backgroundColor: isDarkMode ? colors.slate['800'] : 'white',
-                  borderColor: isDarkMode ? colors.slate['300'] : 'white'
+                  borderColor: isDarkMode ? colors.slate['300'] : 'white',
                 }),
                 indicatorSeparator: (styles) => ({
                   ...styles,
-                  backgroundColor: isDarkMode ? colors.slate['300'] : 'white'
+                  backgroundColor: isDarkMode ? colors.slate['300'] : 'white',
                 }),
                 dropdownIndicator: (styles) => ({
                   ...styles,
                   color: isDarkMode ? colors.slate['300'] : 'white',
                 }),
-                singleValue: (styles) => ({ ...styles, color: isDarkMode ? colors.slate['300'] : colors.slate['800'] })
+                singleValue: (styles) => ({
+                  ...styles,
+                  color: isDarkMode ? colors.slate['300'] : colors.slate['800'],
+                }),
               }}
             />
-          </> : ''}
-        <div className="text-sm hidden sm:block dark:text-slate-200">
+          </>
+        ) : (
+          ''
+        )}
+        <div className="hidden text-sm dark:text-slate-200 sm:block">
           {count > 0 ? `${count} Releases` : 'No Releases'}
         </div>
       </div>
-      {setType ?
-        <div className="flex relative items-center">
+      {setType ? (
+        <div className="relative flex items-center">
           <button
             onClick={() => setType && setType('grid')}
-                className={`px-4 py-2.5 inline-flex items-center justify-center border rounded-l-md border-slate-200 dark:border-slate-300 text-center focus:bg-primary bg-white dark:bg-slate-800 [&.active]:bg-slate-100 [&.active]:dark:bg-slate-300 dark:text-slate-400 [&.active]:dark:text-slate-800${type === 'grid' ? ' active' : ''}`}
+            className={`focus:bg-primary inline-flex items-center justify-center rounded-l-md border border-slate-200 bg-white px-4 py-2.5 text-center dark:border-slate-300 dark:bg-slate-800 dark:text-slate-400 [&.active]:bg-slate-100 [&.active]:dark:bg-slate-300 [&.active]:dark:text-slate-800${
+              type === 'grid' ? ' active' : ''
+            }`}
           >
-            <FontAwesomeIcon icon={solid('border-all')} className="h-4 w-4 mr-1" />
+            <FontAwesomeIcon
+              icon={solid('border-all')}
+              className="mr-1 h-4 w-4"
+            />
           </button>
           <button
             onClick={() => setType && setType('list')}
-            className={`px-4 py-2.5 inline-flex items-center justify-center border border-l-0 rounded-r-md border-slate-200 dark:border-slate-300 text-center focus:bg-primary bg-white dark:bg-slate-800 [&.active]:bg-slate-100 [&.active]:dark:bg-slate-300 dark:text-slate-400 [&.active]:dark:text-slate-800${type === 'list' ? ' active' : ''}`}
+            className={`focus:bg-primary inline-flex items-center justify-center rounded-r-md border border-l-0 border-slate-200 bg-white px-4 py-2.5 text-center dark:border-slate-300 dark:bg-slate-800 dark:text-slate-400 [&.active]:bg-slate-100 [&.active]:dark:bg-slate-300 [&.active]:dark:text-slate-800${
+              type === 'list' ? ' active' : ''
+            }`}
           >
-            <FontAwesomeIcon icon={solid('list')} className="h-4 w-4 mr-1" />
+            <FontAwesomeIcon icon={solid('list')} className="mr-1 h-4 w-4" />
           </button>
-        </div> : ''}
+        </div>
+      ) : (
+        ''
+      )}
     </div>
   );
 };

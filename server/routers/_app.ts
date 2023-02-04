@@ -1,10 +1,10 @@
 import { router } from '../trpc';
-import { userCollectionRouter } from './user-collection';
-import { SpotifyRouter } from './spotify';
+import { discogsRouter } from './discogs';
+import { spotifyRouter } from './spotify';
 
 export const appRouter = router({
-  userCollection: userCollectionRouter,
-  spotify: SpotifyRouter
+  discogs: discogsRouter,
+  spotify: spotifyRouter,
 });
 
 export type AppRouter = typeof appRouter;
