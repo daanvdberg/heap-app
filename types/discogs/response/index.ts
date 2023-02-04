@@ -20,49 +20,45 @@ export interface GetReleaseResponse extends Release {}
 export interface GetLabelResponse extends Label {}
 
 export interface GetFolderResponse {
-	folders: Folder[];
+  folders: Folder[];
 }
 
 export interface GetFolderReleasesResponse {
-	pagination: Pagination;
-	releases: FolderRelease[];
+  pagination: Pagination;
+  releases: FolderRelease[];
 }
 
 export interface GetArtistReleasesResponse {
-	pagination: Pagination;
-	releases: (ArtistRelease | ArtistMaster)[];
+  pagination: Pagination;
+  releases: (ArtistRelease | ArtistMaster)[];
 }
 
 export interface SearchResponse {
-	pagination: Pagination;
-	results: SearchResult[];
+  pagination: Pagination;
+  results: SearchResult[];
 }
 
 export interface GetLabelReleasesResponse {
-	pagination: Pagination;
-	releases: LabelRelease[];
+  pagination: Pagination;
+  releases: LabelRelease[];
 }
 
 export interface GetMasterVersionsResponse extends MasterVersions {
-	pagination: Pagination;
+  pagination: Pagination;
 }
 
-export type SearchResult =
-	| SearchArtist
-	| SearchLabel
-	| SearchMaster
-	| SearchRelease;
+export type SearchResult = SearchArtist | SearchLabel | SearchMaster | SearchRelease;
 
 export interface GetReleaseRatingByUserResponse {
-	username: string;
-	release: string;
-	rating: string;
+  username: string;
+  release: string;
+  rating: string;
 }
 
 export interface GetCommunityReleaseRatingResponse {
-	rating: {
-		count: number;
-		average: number;
-	};
-	release_id: number;
+  rating: {
+    count: number;
+    average: number;
+  };
+  release_id: number;
 }
