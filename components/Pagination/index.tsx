@@ -4,10 +4,10 @@ import ReactPaginate from 'react-paginate';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Select from 'react-select';
-import { AppRouter } from '../../server/routers/_app';
+import { DiscogsRouter } from '../../server/routers/discogs';
 import { isMobile } from '../../utils';
 
-type RouterInput = inferRouterInputs<AppRouter>;
+type RouterInput = inferRouterInputs<DiscogsRouter>;
 type PostsPerPageType = RouterInput['userCollection']['releases']['perPage'];
 
 interface PaginateProps {
@@ -19,13 +19,19 @@ interface PaginateProps {
   count?: number;
 }
 
-const perPageOptions: { value: PostsPerPageType, label: string }[] = [
+const perPageOptions: { value: PostsPerPageType; label: string }[] = [
   { value: 16, label: '16 / page' },
-  { value: 32, label: '32 / page' }
+  { value: 32, label: '32 / page' },
 ];
 
-const Pagination = ({ postsPerPage = 16, totalPages, paginate, currentPage = 1, count = 0, setPerPage}: PaginateProps) => {
-
+const Pagination = ({
+  postsPerPage = 16,
+  totalPages,
+  paginate,
+  currentPage = 1,
+  count = 0,
+  setPerPage,
+}: PaginateProps) => {
   const pageNumbers = [];
 
   const mobile = useRef(false);
@@ -43,20 +49,24 @@ const Pagination = ({ postsPerPage = 16, totalPages, paginate, currentPage = 1, 
   const upperLimit = Math.min((currentPage - 1) * postsPerPage + postsPerPage, count);
 
   return (
-    <div className="flex justify-between items-center bg-white dark:bg-slate-800 sm:rounded-md -ml-4 -mr-4 my-6 lg:ml-0 lg:mr-0 py-3 px-4">
-      <div className="flex flex-col lg:flex-row flex-1 items-center justify-between">
+    <div className="my-6 -ml-4 -mr-4 flex items-center justify-between bg-white py-3 px-4 dark:bg-slate-800 sm:rounded-md lg:ml-0 lg:mr-0">
+      <div className="flex flex-1 flex-col items-center justify-between lg:flex-row">
         <div className="mb-3 lg:m-0 lg:basis-60">
-          {count ? <p className="text-sm text-gray-700">
-            Showing&nbsp;
-            <span className="font-medium">{lowerLimit}</span>
-            &nbsp;to&nbsp;
-            <span className="font-medium">{upperLimit}</span>
-            &nbsp;of&nbsp;
-            <span className="font-medium">{count}</span>
-            &nbsp;results
-          </p> : ''}
+          {count ? (
+            <p className="text-sm text-gray-700">
+              Showing&nbsp;
+              <span className="font-medium">{lowerLimit}</span>
+              &nbsp;to&nbsp;
+              <span className="font-medium">{upperLimit}</span>
+              &nbsp;of&nbsp;
+              <span className="font-medium">{count}</span>
+              &nbsp;results
+            </p>
+          ) : (
+            ''
+          )}
         </div>
-        <div className="flex justify-center grow">
+        <div className="flex grow justify-center">
           <ReactPaginate
             className="isolate inline-flex -space-x-px rounded-md shadow-sm"
             previousLinkClassName="relative inline-flex items-center justify-center rounded-l-md border border-slate-300 bg-white dark:bg-slate-800 h-9 px-3.5 text-sm font-medium text-slate-500 dark:text-slate-300 hover:bg-gray-50 focus:z-20 select-none"
@@ -74,7 +84,7 @@ const Pagination = ({ postsPerPage = 16, totalPages, paginate, currentPage = 1, 
             marginPagesDisplayed={mobile ? 1 : 4}
           />
         </div>
-        <div className="hidden sm:flex basis-60 flex justify-end">
+        <div className="flex hidden basis-60 justify-end sm:flex">
           <label id="per-page-label" htmlFor="per-page" className="sr-only">
             Items per Page
           </label>
@@ -94,8 +104,8 @@ const Pagination = ({ postsPerPage = 16, totalPages, paginate, currentPage = 1, 
               colors: {
                 ...theme.colors,
                 primary25: '#0891b2',
-                primary: '#0891b2'
-              }
+                primary: '#0891b2',
+              },
             })}
           />
         </div>
