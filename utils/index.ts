@@ -12,9 +12,7 @@ export const buildUrl = (url: string, params?: Parameters) => {
 };
 
 export const truncate = (str: string, length: number, includeElipses = false) =>
-  str.length > length
-    ? `${str.substring(0, includeElipses ? length - 3 : length).trim()}…`
-    : str;
+  str.length > length ? `${str.substring(0, includeElipses ? length - 3 : length).trim()}…` : str;
 
 export const isMobile = () => {
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent#mobile_device_detection
@@ -32,14 +30,12 @@ export const isMobile = () => {
       hasTouchScreen = true; // deprecated, but good fallback
     } else {
       // Only as a last resort, fall back to user agent sniffing
-      const UA = navigator.userAgent;
+      const UA = typeof window !== 'undefined' ? navigator.userAgent : '';
       hasTouchScreen =
-        /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) ||
-        /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA);
+        /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) || /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA);
     }
   }
   return hasTouchScreen;
 };
 
-export const cls = (input: string) =>
-  input.replace(/\s+/gm, ' ').split(' ').join(' ').trim();
+export const cls = (input: string) => input.replace(/\s+/gm, ' ').split(' ').join(' ').trim();
