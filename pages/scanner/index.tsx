@@ -1,13 +1,18 @@
 import ReleaseSearchResultItem from '@/components/ReleaseSearchResultItem';
 import { QuaggaJSResultObject } from '@ericblade/quagga2';
+import dynamic from 'next/dynamic';
 import React, { useEffect, useRef, useState } from 'react';
-import Scanner from '@/pages/scanner/components/Scanner';
 import { SearchRelease } from '../../types/discogs';
 import { trpc } from '../../utils/trpc';
+
+const Scanner = dynamic(() => import('@/pages/scanner/components/Scanner'), {
+  ssr: false,
+});
 
 function ScannerPage() {
   const scannerRef = useRef(null);
 
+  const hardwareConcurrency = useRef(0);
   const [allowScanning, setAllowScanning] = useState(false);
   const [scanning, setScanning] = useState(true);
   const [scanResult, setScanResult] = useState<QuaggaJSResultObject>();
@@ -18,6 +23,9 @@ function ScannerPage() {
   );
 
   useEffect(() => {
+    if (navigator.hardwareConcurrency) {
+      hardwareConcurrency.current = navigator.hardwareConcurrency;
+    }
     if (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') {
       const checkMedia = async () => {
         const data = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
@@ -62,7 +70,11 @@ function ScannerPage() {
               height: '36vh',
             }}
           />
-          <Scanner scannerRef={scannerRef} onDetected={(result) => setScanResult(result)} />
+          <Scanner
+            scannerRef={scannerRef}
+            onDetected={(result) => setScanResult(result)}
+            numOfWorkers={hardwareConcurrency.current}
+          />
         </div>
       ) : null}
     </div>
