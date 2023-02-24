@@ -1,4 +1,4 @@
-import React, { RefObject, useCallback, useLayoutEffect } from 'react';
+import React, { RefObject, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import Quagga, { QuaggaJSCodeReader, QuaggaJSReaderConfig, QuaggaJSResultObject } from '@ericblade/quagga2';
 
 function getMedian(arr: number[]) {
@@ -16,8 +16,8 @@ function getMedianOfCodeErrors(decodedCodes: { error?: number; code: number; sta
 }
 
 const defaultConstraints = {
-  width: 640,
-  height: 480,
+  width: 400,
+  height: 200,
 };
 
 const defaultLocatorSettings = {
@@ -25,11 +25,11 @@ const defaultLocatorSettings = {
   halfSample: true,
 };
 
-const defaultDecoders: QuaggaJSCodeReader[] = ['upc_reader'];
+const defaultDecoders: QuaggaJSCodeReader[] = ['ean_reader'];
 
 interface Props {
   onDetected: (result: QuaggaJSResultObject) => any;
-  scannerRef?: RefObject<Element | string>;
+  scannerRef: RefObject<Element | string>;
   onScannerReady?: () => void;
   cameraId?: string;
   facingMode?: string;
@@ -52,14 +52,17 @@ const Scanner = ({
   decoders = defaultDecoders,
   locate = true,
 }: Props) => {
+  const windowSize = useRef<{ width: number; height: number }>();
+
   const errorCheck = useCallback(
     (result: QuaggaJSResultObject) => {
+      console.log(result.codeResult.decodedCodes);
       if (!onDetected) {
         return;
       }
       const err = getMedianOfCodeErrors(result.codeResult.decodedCodes);
       // if Quagga is at least 75% certain that it read correctly, then accept the code.
-      if (err < 0.25 && result) {
+      if (err < 0.5 && result) {
         onDetected(result);
       }
     },
@@ -70,9 +73,16 @@ const Scanner = ({
     const drawingCtx = Quagga.canvas.ctx.overlay;
 
     if (result && result.codeResult && result.codeResult.code) {
-      drawingCtx.fillText(result.codeResult.code, 10, 20);
+      //drawingCtx.fillText(result.codeResult.code, 10, 20);
     }
   };
+
+  useEffect(() => {
+    windowSize.current = {
+      width: window.innerWidth,
+      height: 180,
+    };
+  }, []);
 
   useLayoutEffect(() => {
     Quagga.init(
@@ -81,10 +91,12 @@ const Scanner = ({
           type: 'LiveStream',
           constraints: {
             ...constraints,
+            width: windowSize.current?.width,
+            height: windowSize.current?.height,
             ...(cameraId && { deviceId: cameraId }),
             ...(!cameraId && { facingMode }),
           },
-          target: scannerRef && scannerRef.current ? scannerRef.current : undefined,
+          ...(scannerRef.current ? { target: scannerRef.current } : {}),
         },
         locator,
         numOfWorkers,

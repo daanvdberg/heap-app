@@ -1,3 +1,4 @@
+import Button from '@/components/Button';
 import ReleaseSearchResultItem from '@/components/ReleaseSearchResultItem';
 import { QuaggaJSResultObject } from '@ericblade/quagga2';
 import dynamic from 'next/dynamic';
@@ -14,8 +15,8 @@ function ScannerPage() {
 
   const hardwareConcurrency = useRef(0);
   const [allowScanning, setAllowScanning] = useState(false);
-  const [scanning, setScanning] = useState(true);
-  const [scanResult, setScanResult] = useState<QuaggaJSResultObject>();
+  const [scanning, setScanning] = useState(false);
+  const [scanResult, setScanResult] = useState<QuaggaJSResultObject | null>();
 
   const { status, data } = trpc.discogs.resources.searchBarcode.useQuery<SearchRelease>(
     { barcode: scanResult?.codeResult.code },
@@ -42,41 +43,46 @@ function ScannerPage() {
     }
   }, [status, data]);
 
-  if (!allowScanning) {
-    return <div>Please use this feature on a device with a camera.</div>;
-  }
-
   return (
-    <div>
-      {status === 'success' && data.results.length ? (
-        <div>
-          <h4>Match(es) found</h4>
-          <div className="mt-4 grid grid-cols-1 gap-4">
-            {data.results.map((release) => (
-              <ReleaseSearchResultItem key={release.id} release={release} />
-            ))}
-          </div>
+    <div className="fixed top-0 right-0 bottom-0 left-0 flex flex-col-reverse justify-between pt-[60px]">
+      <Button size="large" className="m-4" onClick={() => setScanning((prev) => !prev)}>
+        {scanning ? 'Stop Scanning' : 'Scan Record'}
+      </Button>
+
+      <div className="flex-grow overflow-auto">
+        <h4 className="border-b border-slate-300 bg-slate-200 px-4 py-3 text-sm text-slate-600">Results</h4>
+        <div className="mt-4 grid grid-cols-1 gap-4">
+          {JSON.stringify(scanResult)}
+          {status === 'success' && data.results.length
+            ? data.results.map((release) => <ReleaseSearchResultItem key={release.id} release={release} />)
+            : status === 'success'
+            ? 'Nothing found...'
+            : ''}
         </div>
-      ) : null}
-      {scanning ? (
-        <div ref={scannerRef} style={{ position: 'relative' }}>
+      </div>
+
+      {!allowScanning ? (
+        <div className="flex h-[180px] items-center justify-center bg-slate-900 p-4 text-sm italic text-amber-700">
+          Please allow access to your camera
+        </div>
+      ) : (
+        <div ref={scannerRef} className="relative h-[180px] w-full bg-slate-900">
           <canvas
             className="drawingBuffer"
             style={{
               position: 'absolute',
               top: 0,
-              display: 'block',
-              width: '100%',
-              height: '36vh',
             }}
           />
-          <Scanner
-            scannerRef={scannerRef}
-            onDetected={(result) => setScanResult(result)}
-            numOfWorkers={hardwareConcurrency.current}
-          />
+          {scanning ? (
+            <Scanner
+              scannerRef={scannerRef}
+              onDetected={(result) => setScanResult(result)}
+              numOfWorkers={hardwareConcurrency.current}
+            />
+          ) : null}
         </div>
-      ) : null}
+      )}
     </div>
   );
 }

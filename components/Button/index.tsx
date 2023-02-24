@@ -1,12 +1,8 @@
-import React, {
-  ButtonHTMLAttributes,
-  forwardRef,
-  PropsWithChildren,
-} from 'react';
+import React, { ButtonHTMLAttributes, forwardRef, PropsWithChildren } from 'react';
 import { cls } from '../../utils';
 
 const classes = {
-  base: 'focus:outline-none transition ease-in-out duration-300',
+  base: 'focus:outline-none transition ease-in-out duration-200 rounded',
   disabled: 'opacity-50 cursor-not-allowed',
   pill: 'rounded-full',
   size: {
@@ -15,12 +11,10 @@ const classes = {
     large: 'px-8 py-3 text-lg',
   },
   variant: {
-    primary:
-      'bg-blue-500 hover:bg-blue-800 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 text-white',
+    primary: 'bg-sky-600 hover:bg-sky-700 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 text-slate-100',
     secondary:
-      'bg-gray-200 hover:bg-gray-800 focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 text-gray-900 hover:text-white',
-    danger:
-      'bg-red-500 hover:bg-red-800 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 text-white',
+      'bg-slate-300 hover:bg-slate-800 focus:ring-2 focus:ring-slate-500 focus:ring-opacity-50 text-slate-900 hover:text-slate-100',
+    danger: 'bg-red-500 hover:bg-red-800 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 text-slate-100',
   },
 };
 
@@ -41,7 +35,7 @@ const Button = forwardRef<HTMLButtonElement, PropsWithChildren<ButtonProps>>(
       className = '',
       variant = 'primary',
       size = 'normal',
-      pill,
+      pill = false,
       disabled = false,
       ...props
     },
@@ -55,8 +49,8 @@ const Button = forwardRef<HTMLButtonElement, PropsWithChildren<ButtonProps>>(
                 ${classes.base}
                 ${classes.size[size]}
                 ${classes.variant[variant]}
-                ${pill && classes.pill}
-                ${disabled && classes.disabled}
+                ${pill ? classes.pill : ''}
+                ${disabled ? classes.disabled : ''}
                 ${className}
             `)}
       {...props}
