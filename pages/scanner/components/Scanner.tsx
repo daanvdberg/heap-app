@@ -1,133 +1,101 @@
-import React, { RefObject, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
-import Quagga, { QuaggaJSCodeReader, QuaggaJSReaderConfig, QuaggaJSResultObject } from '@ericblade/quagga2';
+import Button from '@/components/Button';
+import { Html5Qrcode } from 'html5-qrcode';
+import { QrcodeErrorCallback, QrcodeSuccessCallback } from 'html5-qrcode/core';
+import { CameraDevice } from 'html5-qrcode/esm/camera/core';
+import { Html5QrcodeCameraScanConfig } from 'html5-qrcode/html5-qrcode';
+import { ChangeEvent, useEffect, useState } from 'react';
 
-function getMedian(arr: number[]) {
-  arr.sort((a, b) => a - b);
-  const half = Math.floor(arr.length / 2);
-  if (arr.length % 2 === 1) {
-    return arr[half];
+// TODO
+// Unfinished/unoptimized state
+// To be improved
+
+let html5QrCode: Html5Qrcode;
+
+const createConfig = (props: Html5QrcodeCameraScanConfig) => {
+  let config: Html5QrcodeCameraScanConfig = {
+    fps: props.fps || 10,
+  };
+  if (props.qrbox) {
+    config.qrbox = props.qrbox;
   }
-  return (arr[half - 1] + arr[half]) / 2;
-}
-
-function getMedianOfCodeErrors(decodedCodes: { error?: number; code: number; start: number; end: number }[]) {
-  const errors = decodedCodes.filter((x) => x.error !== undefined).map((x) => x.error);
-  return getMedian(errors as number[]);
-}
-
-const defaultConstraints = {
-  width: 400,
-  height: 200,
+  if (props.aspectRatio) {
+    config.aspectRatio = props.aspectRatio;
+  }
+  if (props.disableFlip !== undefined) {
+    config.disableFlip = props.disableFlip;
+  }
+  return config;
 };
 
-const defaultLocatorSettings = {
-  patchSize: 'medium',
-  halfSample: true,
-};
-
-const defaultDecoders: QuaggaJSCodeReader[] = ['ean_reader'];
-
-interface Props {
-  onDetected: (result: QuaggaJSResultObject) => any;
-  scannerRef: RefObject<Element | string>;
-  onScannerReady?: () => void;
-  cameraId?: string;
-  facingMode?: string;
-  constraints?: {};
-  locator?: {};
-  numOfWorkers?: number;
-  decoders?: (QuaggaJSReaderConfig | QuaggaJSCodeReader)[];
-  locate?: boolean;
+interface ScannerProps extends Html5QrcodeCameraScanConfig {
+  onResult: (decodedText: string) => void;
+  onError?: QrcodeErrorCallback;
+  verbose?: boolean;
 }
 
-const Scanner = ({
-  onDetected,
-  scannerRef,
-  onScannerReady,
-  cameraId,
-  facingMode,
-  constraints = defaultConstraints,
-  locator = defaultLocatorSettings,
-  numOfWorkers = 0,
-  decoders = defaultDecoders,
-  locate = true,
-}: Props) => {
-  const windowSize = useRef<{ width: number; height: number }>();
+const Scanner = ({ onResult, onError, verbose, ...rest }: ScannerProps) => {
+  const [cameraList, setCameraList] = useState<CameraDevice[]>([]);
+  const [activeCamera, setActiveCamera] = useState<CameraDevice>();
 
-  const errorCheck = useCallback(
-    (result: QuaggaJSResultObject) => {
-      console.log(result.codeResult.decodedCodes);
-      if (!onDetected) {
-        return;
-      }
-      const err = getMedianOfCodeErrors(result.codeResult.decodedCodes);
-      // if Quagga is at least 75% certain that it read correctly, then accept the code.
-      if (err < 0.5 && result) {
-        onDetected(result);
-      }
-    },
-    [onDetected]
-  );
+  useEffect(() => {
+    html5QrCode = new Html5Qrcode('reader');
+    getCameras();
+    const oldRegion = document.getElementById('qr-shaded-region');
+    oldRegion && oldRegion.remove();
+  }, []);
 
-  const handleProcessed = (result: QuaggaJSResultObject) => {
-    const drawingCtx = Quagga.canvas.ctx.overlay;
+  const handleClickAdvanced = () => {
+    const qrCodeSuccessCallback: QrcodeSuccessCallback = (decodedText, decodedResult) => {
+      onResult(decodedText);
+      handleStop();
+    };
+    html5QrCode.start({ facingMode: 'environment' }, createConfig(rest), qrCodeSuccessCallback, onError).then(() => {
+      // const oldRegion = document.getElementById("qr-shaded-region");
+      // if (oldRegion) oldRegion.innerHTML = "";
+    });
+  };
 
-    if (result && result.codeResult && result.codeResult.code) {
-      //drawingCtx.fillText(result.codeResult.code, 10, 20);
+  const getCameras = () => {
+    Html5Qrcode.getCameras()
+      .then((devices) => {
+        if (devices && devices.length) {
+          console.log(JSON.stringify(devices));
+          setCameraList(devices);
+          setActiveCamera(devices[0]);
+        }
+      })
+      .catch(() => {
+        setCameraList([]);
+      });
+  };
+
+  const onCameraChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    if (e.target.selectedIndex) {
+      let selectedCamera = e.target.options[e.target.selectedIndex];
+      console.info(selectedCamera);
+      let cameraId = selectedCamera.dataset.key;
+      setActiveCamera(cameraList.find((cam) => cam.id === cameraId));
     }
   };
 
-  useEffect(() => {
-    windowSize.current = {
-      width: window.innerWidth,
-      height: 180,
-    };
-  }, []);
+  const handleStop = () => {
+    try {
+      html5QrCode.stop().then(() => {
+        html5QrCode.clear();
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-  useLayoutEffect(() => {
-    Quagga.init(
-      {
-        inputStream: {
-          type: 'LiveStream',
-          constraints: {
-            ...constraints,
-            width: windowSize.current?.width,
-            height: windowSize.current?.height,
-            ...(cameraId && { deviceId: cameraId }),
-            ...(!cameraId && { facingMode }),
-          },
-          ...(scannerRef.current ? { target: scannerRef.current } : {}),
-        },
-        locator,
-        numOfWorkers,
-        decoder: { readers: decoders },
-        locate,
-      },
-      (err) => {
-        Quagga.onProcessed(handleProcessed);
-
-        if (err) {
-          return console.log('Error starting Quagga:', err);
-        }
-        if (scannerRef && scannerRef.current) {
-          Quagga.start();
-          if (onScannerReady) {
-            onScannerReady();
-          }
-        }
-      }
-    );
-
-    Quagga.onDetected(errorCheck);
-
-    return () => {
-      Quagga.offDetected(errorCheck);
-      Quagga.offProcessed(handleProcessed);
-      Quagga.stop();
-    };
-  }, [cameraId, onDetected, onScannerReady, scannerRef, errorCheck, constraints, locator, decoders, locate]);
-
-  return null;
+  return (
+    <div style={{ position: 'relative' }}>
+      <div id="reader"></div>
+      {JSON.stringify(cameraList)}
+      <Button onClick={() => handleClickAdvanced()}>start</Button>
+      <Button onClick={() => handleStop()}>stop pro</Button>
+    </div>
+  );
 };
 
 export default Scanner;

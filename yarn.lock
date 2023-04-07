@@ -481,15 +481,6 @@
     "@types/scheduler" "*"
     csstype "^3.0.2"
 
-"@types/react@^16.9.35":
-  version "16.14.35"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.14.35.tgz#9d3cf047d85aca8006c4776693124a5be90ee429"
-  integrity sha512-NUEiwmSS1XXtmBcsm1NyRRPYjoZF2YTE89/5QiLt5mlGffYK9FQqOKuOLuXNrjPQV04oQgaZG+Yq02ZfHoFyyg==
-  dependencies:
-    "@types/prop-types" "*"
-    "@types/scheduler" "*"
-    csstype "^3.0.2"
-
 "@types/scheduler@*":
   version "0.16.2"
   resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.2.tgz#1a62f89525723dde24ba1b01b092bf5df8ad4d39"
@@ -539,10 +530,10 @@
     "@typescript-eslint/types" "5.50.0"
     eslint-visitor-keys "^3.3.0"
 
-"@zxing/library@^0.17.0":
-  version "0.17.1"
-  resolved "https://registry.yarnpkg.com/@zxing/library/-/library-0.17.1.tgz#4c82bf401391c2b79bfbab0a6b1143da6d8feb1a"
-  integrity sha512-RuiBZuteGaFXCle/b0X+g3peN8UpDc3pGe/J7hZBzKWaMZLbjensR7ja3vy47xWhXU4e8MICGqegPMxc2V2sow==
+"@zxing/library@^0.19.2":
+  version "0.19.2"
+  resolved "https://registry.yarnpkg.com/@zxing/library/-/library-0.19.2.tgz#d5c35f3741121952d73231f986becfdcb5e24de1"
+  integrity sha512-0aCQIbGXsDHcBuRYuZRZfJeLRYiPfdLxIlh5bY7k+k2bkxFwzla+75VyFi1rnjU5hqaZogdSH+Dw013YDsQOjg==
   dependencies:
     ts-custom-error "^3.0.0"
   optionalDependencies:
@@ -1813,6 +1804,11 @@ hoist-non-react-statics@^3.3.1:
   dependencies:
     react-is "^16.7.0"
 
+html5-qrcode@^2.3.7:
+  version "2.3.7"
+  resolved "https://registry.yarnpkg.com/html5-qrcode/-/html5-qrcode-2.3.7.tgz#09ed2ca7473a47bd551088c15fcfcb7cb409a5be"
+  integrity sha512-Jmlok9Ynm49hgVXkdupWryf8o430proIFoQsRl1LmTg4Rq461W72omylR9yw9tsEMtswMEw3wacUM5y0agOBQA==
+
 http-signature@~1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/http-signature/-/http-signature-1.2.0.tgz#9aecd925114772f3d95b65a60abb8f7c18fbace1"
@@ -2762,15 +2758,6 @@ react-paginate@^8.1.4:
   dependencies:
     prop-types "^15"
 
-react-qr-barcode-scanner@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/react-qr-barcode-scanner/-/react-qr-barcode-scanner-1.0.6.tgz#1df7ac3f3cb839ad673e8b619e0e93b4bdddc4e3"
-  integrity sha512-DdalO4oqHyxWPa4cIjiHeMS19HbIvKq+oo/PAglAsxmfhAUGC8sM1mJnzo0zPQM1yw9ZNpjrtqHz+rs86Mu7Ww==
-  dependencies:
-    "@types/react" "^16.9.35"
-    "@zxing/library" "^0.17.0"
-    react-webcam "^5.0.1"
-
 react-select@^5.6.1:
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/react-select/-/react-select-5.7.0.tgz#82921b38f1fcf1471a0b62304da01f2896cd8ce6"
@@ -2800,11 +2787,6 @@ react-transition-group@^4.3.0:
     dom-helpers "^5.0.1"
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
-
-react-webcam@^5.0.1:
-  version "5.2.4"
-  resolved "https://registry.yarnpkg.com/react-webcam/-/react-webcam-5.2.4.tgz#714b4460ea43ac7ed081824299cd2a580f764478"
-  integrity sha512-Qqj14t68Ke1eoEYjFde+N48HtuIJg0ePIQRpFww9eZt5oBcDpe/l60h+m3VRFJAR5/E3dOhSU5R8EJEcdCq/Eg==
 
 react@^18.2.0:
   version "18.2.0"
