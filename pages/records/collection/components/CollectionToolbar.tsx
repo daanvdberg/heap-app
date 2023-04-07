@@ -33,9 +33,7 @@ const CollectionToolbar = ({
 
   useMemo(() => {
     if (filterOptions && filterOptions.length) {
-      setOptions(
-        filterOptions.filter((f) => f.count > 0).map((f) => parseFilter(f))
-      );
+      setOptions(filterOptions.filter((f) => f.count > 0).map((f) => parseFilter(f)));
     }
   }, [filterOptions]);
 
@@ -51,41 +49,13 @@ const CollectionToolbar = ({
               aria-labelledby="filter-label"
               inputId="filter"
               name="select-filter"
-              className="mr-4 w-44"
+              className="rs-container mr-4 w-44"
+              classNamePrefix="rs-select"
               defaultValue={options[0]}
               options={options}
               value={currentFilter && parseFilter(currentFilter)}
-              onChange={(option) =>
-                option && setFilter && setFilter(option.value)
-              }
+              onChange={(option) => option && setFilter && setFilter(option.value)}
               placeholder="Filter by Folder"
-              theme={(theme) => ({
-                ...theme,
-                colors: {
-                  ...theme.colors,
-                  primary25: '#d3e5ea',
-                  primary: '#0891b2',
-                },
-              })}
-              styles={{
-                control: (styles) => ({
-                  ...styles,
-                  backgroundColor: isDarkMode ? colors.slate['800'] : 'white',
-                  borderColor: isDarkMode ? colors.slate['300'] : 'white',
-                }),
-                indicatorSeparator: (styles) => ({
-                  ...styles,
-                  backgroundColor: isDarkMode ? colors.slate['300'] : 'white',
-                }),
-                dropdownIndicator: (styles) => ({
-                  ...styles,
-                  color: isDarkMode ? colors.slate['300'] : 'white',
-                }),
-                singleValue: (styles) => ({
-                  ...styles,
-                  color: isDarkMode ? colors.slate['300'] : colors.slate['800'],
-                }),
-              }}
             />
           </>
         ) : (
@@ -103,10 +73,7 @@ const CollectionToolbar = ({
               type === 'grid' ? ' active' : ''
             }`}
           >
-            <FontAwesomeIcon
-              icon={solid('border-all')}
-              className="mr-1 h-4 w-4"
-            />
+            <FontAwesomeIcon icon={solid('border-all')} className="mr-1 h-4 w-4" />
           </button>
           <button
             onClick={() => setType && setType('list')}

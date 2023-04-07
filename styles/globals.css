@@ -39,3 +39,44 @@ a {
     height: unset;
   }
 }
+
+/* Styling for React Select */
+@layer components {
+  .rs-container .rs-select__control {
+    @apply bg-white dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500;
+  }
+
+  .rs-container .rs-select__control--is-focused {
+    @apply border-slate-500 hover:border-slate-500 dark:border-slate-400 dark:hover:border-slate-400 shadow-none;
+  }
+
+  .rs-container .rs-select__menu {
+    @apply bg-slate-100 dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-600;
+  }
+
+  .rs-container .rs-select__option {
+    @apply text-slate-600 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-800;
+  }
+
+  .rs-container .rs-select__option--is-focused {
+    @apply bg-slate-200 dark:bg-slate-800;
+  }
+
+  .rs-container .rs-select__indicator-separator {
+    @apply bg-slate-400;
+  }
+
+  .rs-container .rs-select__indicator {
+    @apply text-slate-400;
+  }
+
+  .rs-container .rs-select__indicator:hover {
+    @apply text-slate-400;
+  }
+
+  .rs-container .rs-select__input-container,
+  .rs-container .rs-select__placeholder,
+  .rs-container .rs-select__single-value {
+    @apply text-slate-600 dark:text-slate-200;
+  }
+}
